@@ -1,0 +1,16 @@
+{
+  "name": "mongoose",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index"
+  },
+  "dependencies": {
+    "mongoose": "^5.8.7"
+  },
+  "devDependencies": {},
+  "author": "Ian De Jesus",
+  "license": "ISC",
+  "description": ""
+}
