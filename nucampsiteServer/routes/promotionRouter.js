@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const promotionRouter = express.Router();
+const authenticate = require('../authenticate');
 const Promotion = require('../models/promotion');
+
+const promotionRouter = express.Router();
 
 promotionRouter.use(bodyParser.json());
 
@@ -9,62 +11,62 @@ promotionRouter.route('/')
 .get((req, res, next) => {
     Promotion.find()
     .then(promotions => {
-        res.statusCode =200;
+        res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(promotions);
     })
     .catch(err => next(err));
 })
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => {
     Promotion.create(req.body)
     .then(promotion => {
-        console.log('Camsite Created ', promotion);
+        console.log('Promotion Created '. promotion);
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(promotion);
     })
-    .catch(err => next(err))
+    .catch(err => next(err));
 })
-.put((req, res) => {
+.put(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /promotions');
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, (req, res, next) => {
     Promotion.deleteMany()
     .then(response => {
-        res.statusCode =200;
-        res.setHeader('Content-Type', 'applicaiton/json');
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
         res.json(response);
     })
-    .catch(err => next(err))
+    .catch(err => next(err));
 });
 
 promotionRouter.route('/:promotionId')
+.post(authenticate.verifyUser, (req, res) => {
+    res.statusCode = 403;
+    res.end(`POST operation not supported on /promotions/${req.params.promotionId}`);
+})
 .get((req, res, next) => {
-    Promotion.findById(req.params.partnerId)
+    Promotion.findById(req.params.promotionId)
     .then(promotion => {
         res.statusCode = 200;
-        res.setHeader('Content-Type', application/json);
+        res.setHeader('Content-type', 'text/plain');
         res.json(promotion);
     })
     .catch(err => next(err));
 })
-.post((req, res) => {
-    res.statusCode = 403;
-    res.end(`POST operation not supported on /promotions/${req.params.promotionId}`)
-})
-.put((req, res, next) => {
-    Promotion.findByIdAndUpdate(req.param.promtionId, {
-        $set: req.body},
-        {new: true})
+.put(authenticate.verifyUser, (req, res) => {
+    Promotion.findByIdAndUpdate(req.params.promotionId, {
+        $set: req.body
+    }, {new:true })
     .then(promotion => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.json(promotion);  
+        res.json(promotion);
     })
     .catch(err => next(err));
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, (req, res, next) => {
     Promotion.findByIdAndDelete(req.params.promotionId)
     .then(response => {
         res.statusCode = 200;
@@ -73,4 +75,5 @@ promotionRouter.route('/:promotionId')
     })
     .catch(err => next(err));
 });
-module.exports = promotionRouter; //testing if this works
+
+module.exports = promotionRouter;
